@@ -1,0 +1,112 @@
+#include <Servo.h>
+#include <math.h>
+Servo s1,s2,s3;
+
+int s1pin=8;
+int s2pin=9;
+int s3pin=10;
+
+float x,y,z,r;
+int theta,phai,beta,alpha,gamma;
+
+#define pi 3.14159265;
+
+// int s1angle;
+// int s2angle;
+// int s3angle;
+
+float l1=8;
+float l2=12;
+
+//functions
+float raddtodeg(float th){
+  float ans;
+  ans=th*180/pi;
+  return ans;
+}
+
+
+float rlength(float x,float y, float z){
+float r;
+r=pow((x*x+y*y+z*z),0.5);
+return r;
+}
+
+
+
+float s1angle(float x,float y,float z,float r){
+float theta;
+theta=raddtodeg(atan(y/x));
+return theta;
+}
+
+
+
+float s2angle(float l1,float l2,float z,float r){
+float phai,alpha;
+alpha=raddtodeg(acos((l1*l1+r*r-l2*l2)/(2*l1*r)));
+phai=raddtodeg(acos(z/r));
+return phai-alpha;
+}
+
+
+float s3angle(float l1,float l2,float r){
+float beta;
+beta=raddtodeg(acos((l1*l1+l2*l2-r*r)/(2*l1*l2)));
+return 180-beta;
+}
+//functions end
+
+void setup(){
+  
+  Serial.begin(9600);
+
+  s1.attach(s1pin);
+  s2.attach(s2pin);
+  s3.attach(s3pin);
+
+  pinMode(s1pin,OUTPUT);
+  pinMode(s2pin,OUTPUT);
+  pinMode(s3pin,OUTPUT);
+
+
+}
+void loop() {
+
+//input
+Serial.print("x is ");
+  while (Serial.available()==0){}
+  x=Serial.parseInt();  
+  Serial.println(x); 
+
+Serial.print("y is ");
+  while (Serial.available()==0){}
+  y=Serial.parseInt();
+  Serial.println(y);   
+
+Serial.print("z is ");
+  while (Serial.available()==0){}
+  z=Serial.parseInt();
+  Serial.println(z); 
+//intput end
+
+  r=rlength(x,y,z);
+
+theta=s1angle(x,y,z,r);
+gamma=s2angle(l1,l2,z,r);
+beta=s3angle(l1,l2,r);
+Serial.print(theta);
+Serial.print(" ");
+Serial.print(gamma);
+Serial.print(" ");
+Serial.println(beta);
+
+  
+
+
+
+
+
+  
+
+}
